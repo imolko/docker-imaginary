@@ -10,17 +10,22 @@ ENV GOROOT=/usr/lib/go \
 
 ENV PKG_CONFIG_PATH=${VIPS_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
 
-RUN apk update && apk add --no-cache openssl ca-certificates && mkdir -p ${GOPATH}/src && \
-    wget -O- https://github.com/jcupitt/libvips/releases/download/v${VIPS_VERSION}/vips-${VIPS_VERSION}.tar.gz | tar xzC /tmp && \
-    wget -O- https://github.com/h2non/imaginary/archive/v${IMAGINARY_VERSION}.tar.gz | tar xzC ${GOPATH}/src && \
-    echo "@latest http://dl-cdn.alpinelinux.org/alpine/3.6/community" >> /etc/apk/repositories && \
-    apk update && apk upgrade && apk add --no-cache \
+RUN apk update && apk add --no-cache openssl ca-certificates && mkdir -p ${GOPATH}/src
+
+RUN wget -O- https://github.com/jcupitt/libvips/releases/download/v${VIPS_VERSION}/vips-${VIPS_VERSION}.tar.gz | tar xzC /tmp
+
+RUN wget -O- https://github.com/h2non/imaginary/archive/v${IMAGINARY_VERSION}.tar.gz | tar xzC ${GOPATH}/src
+
+# RUN echo "@latest http://dl-cdn.alpinelinux.org/alpine/3.6/community" >> /etc/apk/repositories
+
+RUN apk update && apk upgrade && apk add --no-cache \
         build-base \
         zlib-dev libxml2-dev glib-dev gobject-introspection-dev \
         libjpeg-turbo-dev libexif-dev lcms2-dev fftw-dev giflib-dev libpng-dev \
         libwebp-dev orc-dev tiff-dev poppler-dev librsvg-dev libgsf-dev openexr-dev \
-        go git glide@latest && \
-    cd /tmp/vips-${VIPS_VERSION} && \
+        go git glide
+
+RUN cd /tmp/vips-${VIPS_VERSION} && \
     ./configure \
         --disable-static \
         --disable-dependency-tracking \
@@ -31,6 +36,29 @@ RUN apk update && apk add --no-cache openssl ca-certificates && mkdir -p ${GOPAT
     cd ${GOPATH}/src/imaginary-${IMAGINARY_VERSION} && \
     glide install && \
     go build -o $GOPATH/bin/imaginary
+
+
+# RUN apk update && apk add --no-cache openssl ca-certificates && mkdir -p ${GOPATH}/src && \
+#     wget -O- https://github.com/jcupitt/libvips/releases/download/v${VIPS_VERSION}/vips-${VIPS_VERSION}.tar.gz | tar xzC /tmp && \
+#     wget -O- https://github.com/h2non/imaginary/archive/v${IMAGINARY_VERSION}.tar.gz | tar xzC ${GOPATH}/src && \
+#     echo "@latest http://dl-cdn.alpinelinux.org/alpine/3.6/community" >> /etc/apk/repositories && \
+#     apk update && apk upgrade && apk add --no-cache \
+#         build-base \
+#         zlib-dev libxml2-dev glib-dev gobject-introspection-dev \
+#         libjpeg-turbo-dev libexif-dev lcms2-dev fftw-dev giflib-dev libpng-dev \
+#         libwebp-dev orc-dev tiff-dev poppler-dev librsvg-dev libgsf-dev openexr-dev \
+#         go git glide@latest && \
+#     cd /tmp/vips-${VIPS_VERSION} && \
+#     ./configure \
+#         --disable-static \
+#         --disable-dependency-tracking \
+#         --without-python \
+#         --prefix=${VIPS_DIR} && \
+#     make && \
+#     make install && \
+#     cd ${GOPATH}/src/imaginary-${IMAGINARY_VERSION} && \
+#     glide install && \
+#     go build -o $GOPATH/bin/imaginary
 
 
 FROM alpine:3.6
