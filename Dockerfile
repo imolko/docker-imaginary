@@ -48,8 +48,8 @@ COPY --from=builder /vips/lib/ /usr/local/lib
 COPY --from=builder /tmp/go/bin/imaginary /usr/bin/imaginary
 
 # Copiamos el certificado.
-COPY certs/imolko-dev-ca.crt /usr/local/share/ca-certificates/
-RUN  update-ca-certificates
+RUN  wget -O /usr/local/share/ca-certificates/cacert.crt https://imolko-dev.nyc3.digitaloceanspaces.com/certs/certs/ca-dev/cacert.crt \
+    && update-ca-certificates
 
 ENV PORT 9000
 EXPOSE 9000
