@@ -48,7 +48,7 @@ COPY --from=builder /vips/lib/ /usr/local/lib
 COPY --from=builder /tmp/go/bin/imaginary /usr/bin/imaginary
 
 # Copiamos el certificado.
-COPY imolko-dev-ca.crt /usr/local/share/ca-certificates/
+COPY certs/imolko-dev-ca.crt /usr/local/share/ca-certificates/
 RUN  update-ca-certificates
 
 ENV PORT 9000
